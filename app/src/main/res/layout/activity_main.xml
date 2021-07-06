@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_music"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp">
+
+        <SeekBar
+            android:id="@+id/sb_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progress="0"
+            android:max="100"
+            android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:id="@+id/tv_current_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sb_progress"
+            android:textColor="@color/black"
+            android:hint="00:01"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_max_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sb_progress"
+            android:layout_alignParentEnd="true"
+            android:hint="04:01"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_music_last"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_music_last"
+            android:layout_marginEnd="60dp"/>
+
+        <ImageView
+            android:id="@+id/iv_music_play"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_music_play"/>
+
+
+        <ImageView
+            android:id="@+id/iv_music_next"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_music_next"
+            android:layout_marginStart="60dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
