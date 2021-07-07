@@ -116,6 +116,15 @@ void AudioChannel::doneDecode() {
         swr_free(&mSwr);
         this->mSwr = nullptr;
     }
+    while (!mDataQueue.empty()) {
+        PcmData *pcm = mDataQueue.front();
+        if (pcm) {
+            mDataQueue.pop();
+            delete pcm;
+        } else {
+            break;
+        }
+    }
 }
 
 void AudioChannel::loopDecode() {

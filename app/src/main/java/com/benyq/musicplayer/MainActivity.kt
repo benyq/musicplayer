@@ -54,11 +54,13 @@ class MainActivity : AppCompatActivity() {
             )
             setData()
             musicPlayer.setDataSource(musicAdapter.data[0].path)
+            musicAdapter.updateAdapter(0)
         }
-        musicAdapter.setMusicItemAction { path, _ ->
+        musicAdapter.setMusicItemAction { path, position ->
             musicPlayer.stop()
             musicPlayer.setDataSource(path)
             musicPlayer.prepare()
+            musicAdapter.updateAdapter(position)
         }
         binding.ivMusicPlay.setOnClickListener {
             if (musicPlayer.isPlaying) {
@@ -71,6 +73,32 @@ class MainActivity : AppCompatActivity() {
                 updatePlayState(true)
                 musicPlayer.prepare()
             }
+        }
+        binding.ivMusicNext.setOnClickListener {
+            var position = musicAdapter.getSelectedPosition()
+            if (position == -1) {
+                position = 0
+            }else {
+                position = (position + 1) % musicAdapter.data.size
+            }
+
+            musicPlayer.stop()
+            musicPlayer.setDataSource(musicAdapter.data[position].path)
+            musicPlayer.prepare()
+            musicAdapter.updateAdapter(position)
+        }
+        binding.ivMusicLast.setOnClickListener {
+            var position = musicAdapter.getSelectedPosition()
+            if (position == -1) {
+                position = 0
+            }else {
+                position = (position + musicAdapter.data.size - 1) % musicAdapter.data.size
+            }
+
+            musicPlayer.stop()
+            musicPlayer.setDataSource(musicAdapter.data[position].path)
+            musicPlayer.prepare()
+            musicAdapter.updateAdapter(position)
         }
         binding.sbProgress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             private var seekTime = 0
