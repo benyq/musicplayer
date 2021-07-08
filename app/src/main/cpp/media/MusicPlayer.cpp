@@ -12,6 +12,7 @@
 MusicPlayer::MusicPlayer(JavaCallHelper *helper): helper(helper), prepareTask(0) {
     avformat_network_init();
     audioChannel = nullptr;
+    avFormatContext = nullptr;
 }
 
 MusicPlayer::~MusicPlayer() {
@@ -55,8 +56,13 @@ void MusicPlayer::stop() {
     if (prepareTask != 0) {
         pthread_join(prepareTask, nullptr);
     }
+    if (avFormatContext) {
+        avformat_free_context(avFormatContext);
+        avFormatContext = nullptr;
+    }
     if (audioChannel) {
         audioChannel->stop();
+        audioChannel = nullptr;
     }
 }
 

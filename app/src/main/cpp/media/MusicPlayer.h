@@ -44,6 +44,8 @@ private:
     int64_t duration;
     AudioChannel *audioChannel;
 
+    pthread_mutex_t mReleaseMutex = PTHREAD_MUTEX_INITIALIZER;
+
 private:
     void _prepare();
 

@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
                 musicAdapter.data = data
             }
         }
+        musicAdapter.data.add(0, Music("山楂树之恋-网络版", "http://81.69.26.237/szs.mp3", false))
     }
 
     override fun onDestroy() {

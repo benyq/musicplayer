@@ -2,6 +2,7 @@
 // Created by Administrator on 2021/6/18.
 //
 
+#include <unistd.h>
 #include "AudioChannel.h"
 #include "../utils/android_log.h"
 
@@ -28,7 +29,7 @@ void *audioPlay_t(void *args) {
 }
 
 void AudioChannel::playAudio() {
-    while (mDataQueue.empty()) {
+    while (mDataQueue.empty() && mState != STOP) {
         waitForCache();
     }
     (*mPcmPlayer)->SetPlayState(mPcmPlayer, SL_PLAYSTATE_PLAYING);
@@ -39,7 +40,9 @@ void AudioChannel::play() {
 
     if (mState == PAUSE) {
         mState = DECODING;
-        sendCacheReadySignal();
+        if (mPcmPlayer != nullptr) {
+            (*mPcmPlayer)->SetPlayState(mPcmPlayer, SL_PLAYSTATE_PLAYING);
+        }
     } else {
         pthread_create(&decodeTask, nullptr, decode_t, this);
     }
@@ -54,10 +57,16 @@ void AudioChannel::decode() {
 
 void AudioChannel::pause() {
     mState = PAUSE;
+    if (mPcmPlayer != nullptr) {
+        (*mPcmPlayer)->SetPlayState(mPcmPlayer, SL_PLAYSTATE_PAUSED);
+    }
 }
 
 void AudioChannel::stop() {
     mState = STOP;
+    if (mPcmPlayer != nullptr) {
+        (*mPcmPlayer)->SetPlayState(mPcmPlayer, SL_PLAYSTATE_STOPPED);
+    }
     pthread_join(decodeTask, nullptr);
     pthread_join(audioPlayTask, nullptr);
 }
@@ -125,19 +134,17 @@ void AudioChannel::doneDecode() {
             break;
         }
     }
+    if (mOutBuffer) {
+        delete mOutBuffer;
+        mOutBuffer = nullptr;
+    }
 }
 
 void AudioChannel::loopDecode() {
     while (1) {
-
         if (mState == STOP) {
             break;
         }
-
-        if (mState == PAUSE) {
-            waitForCache();
-        }
-
         if (decodeOneFrame()) {
             render(avFrame);
         }
@@ -156,8 +163,9 @@ void AudioChannel::render(AVFrame *frame) {
     dataSize = av_samples_get_buffer_size(NULL, 2, nb,AV_SAMPLE_FMT_S16, 1);
 
     if (mPcmPlayer) {
-        while (mDataQueue.size() >= 2) {
+        while (mDataQueue.size() >= 2 && mState != STOP) {
             sendCacheReadySignal();
+            usleep(20000);
         }
 
         // 将数据复制一份，并压入队列
